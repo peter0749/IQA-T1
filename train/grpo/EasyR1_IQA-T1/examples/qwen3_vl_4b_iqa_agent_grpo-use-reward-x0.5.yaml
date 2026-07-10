@@ -1,0 +1,130 @@
+# Multi-turn IQA Agent GRPO (Qwen3-VL-4B). 6x 4090 (24GB) 适用。
+# 约束: rollout_batch_size % global_batch_size == 0;
+#       (rollout_batch_size * n) % (n_gpus * micro_batch_size_per_device_for_experience) == 0.
+#
+# 与 2B v2 版本的主要差异:
+#   1. 模型 2B→4B：权重 ~8.7GB (bf16)，单卡放不下，actor 必须开 FSDP full_shard
+#   2. GPU 4→6：FSDP 6 卡切片后每卡模型状态 ~6GB；TP=2 下 3 组并行推理
+#   3. n 16→8：4B 推理更慢，减少采样数以平衡训练速度
+#   4. 学习率 1e-6→5e-7：4B 模型适当降低学习率，稳定 RL 训练
+data:
+  train_files: ./data/train_koniq_7k_rl.json
+  val_files: null
+  prompt_key: problem
+  answer_key: answer
+  image_key: images
+  video_key: videos
+  image_dir: YOUR_KONIQ_DATA_DIR
+  video_fps: 2.0
+  max_prompt_length: 2560
+  max_response_length: 1024
+  # 每步 rollout 的 prompt 数；24*8=192 条序列。6 卡下吞吐量合理
+  rollout_batch_size: 16
+  mini_rollout_batch_size: null
+  val_batch_size: 12
+  format_prompt: null
+  # 使用 system prompt：指令放在 system 消息，用户消息仅含 problem（含 <image>）
+  system_prompt: ./examples/format_prompt/iqa_system.txt
+  override_chat_template: null
+  shuffle: true
+  seed: 42
+  min_pixels: 65536
+  max_pixels: 819200
+  filter_overlong_prompts: true
+
+algorithm:
+  adv_estimator: grpo
+  disable_kl: false
+  use_kl_loss: true
+  kl_penalty: low_var_kl
+  kl_coef: 1.0e-2
+  online_filtering: false
+  filter_key: overall
+  filter_low: 0.01
+  filter_high: 0.99
+
+worker:
+  actor:
+    # global_batch_size * n = 12*8 = 96 条序列/步；须 rollout_batch_size % global_batch_size == 0 → 24%12=0 ✓
+    global_batch_size: 8
+    micro_batch_size_per_device_for_update: 1
+    # 24*8=192 条序列，192/6GPU=32/卡，32%4=0 ✓
+    micro_batch_size_per_device_for_experience: 4
+    max_grad_norm: 1.0
+    padding_free: true
+    dynamic_batching: true
+    ulysses_size: 1
+    use_torch_compile: false  # 禁用 torch.compile 避免 Triton 链接 libcuda 失败
+    model:
+      model_path: YOUR_SFT_CHECKPOINT_PATH
+      enable_gradient_checkpointing: true
+      trust_remote_code: true
+      freeze_vision_tower: true
+    optim:
+      lr: 1.0e-6 
+      weight_decay: 1.0e-2
+      strategy: adamw
+      lr_warmup_ratio: 0.02
+    fsdp:
+      enable_full_shard: true   # ★ 关键改动：4B 模型权重+优化器+梯度 ~31GB，单卡 24GB 放不下，必须开 FSDP 全切片
+      enable_cpu_offload: false  # 6 卡 FSDP 后每卡 ~6GB 模型状态，无需 CPU offload；且 CPU offload 与梯度累积存在兼容性问题
+      enable_rank0_init: true
+    offload:
+      offload_params: false
+      offload_optimizer: false   # FSDP 已将 optimizer states 切片，6 卡分摊后每卡 ~2.5GB，无需 offload
+
+  rollout:
+    n: 8                        # 每 prompt 采样 8 条；4B 推理更慢，n 从 16 降至 8 以平衡速度
+    temperature: 1.0
+    top_p: 1.0
+    limit_images: 0
+    gpu_memory_utilization: 0.55  # 4B 权重 ~4.4GB/卡(TP=2)，降低 util 以留足 KV cache 空间，保证推理稳定
+    enforce_eager: true   # 必须 true：避免 vLLM v1 + Qwen3-VL 时 flash_attn_varlen 崩溃
+    enable_chunked_prefill: false
+    tensor_parallel_size: 2    # 6卡 / TP=2 = 3 组并行推理，兼顾速度与显存
+    disable_tqdm: false
+    val_override_config:
+      temperature: 0.6
+      top_p: 0.95
+      n: 1
+    agent:
+      activate_agent: true
+      tool_name_key: env_name
+      single_response_max_tokens: 512
+      max_turns: 6
+      concurrent_workers: 1
+      show_tqdm: true
+      custom_stop: ["<answer_end>"]
+
+  ref:
+    use_torch_compile: false  # 禁用 torch.compile 避免 Triton 链接 libcuda 失败
+    fsdp:
+      enable_full_shard: true
+      enable_cpu_offload: true    # 参考模型仅做前向推理，CPU offload 节省显存给 rollout 和 actor
+      enable_rank0_init: true
+    offload:
+      offload_params: true        # 参考模型参数 offload 到 CPU，为其他阶段腾出显存
+      offload_optimizer: true
+
+  reward:
+    reward_function: ./examples/reward_function/iqa.py:compute_score
+
+trainer:
+  total_epochs: 1
+  max_steps: null
+  project_name: thinkvis_iqa
+  experiment_name: qwen3-vl-4B-Instruct-all-GRPO-use-reward-x0.5
+  logger: ["file", "wandb"]
+  nnodes: 1
+  n_gpus_per_node: 4            # ★ 6 张 4090
+  max_try_make_batch: 20
+  val_freq: -1
+  val_before_train: false
+  val_only: false
+  val_generations_to_log: 3
+  save_freq: 100                # 4B 训练更贵，适当降低保存间隔（150步 ≈ 3600 prompts）
+  save_limit: 2
+  save_model_only: false
+  save_checkpoint_path: ../../../saves/qwen3-vl-4B-Instruct-all-GRPO
+  load_checkpoint_path: null
+  find_last_checkpoint: false

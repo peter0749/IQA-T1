@@ -1,0 +1,56 @@
+### ===========================================
+### Qwen3-VL-4B-Instruct 全参数 SFT 微调配置（冻结视觉编码器）
+### 用于 KonIQ 图像质量评估任务
+### ===========================================
+
+### model - 模型配置
+model_name_or_path: ../../../Qwen3-VL-4B-Instruct
+image_max_pixels: 819200    # 1024 × 800
+video_max_pixels: 16384
+trust_remote_code: true
+
+# 添加自定义 special tokens
+add_special_tokens: "<answer_start>,<answer_end>,<GradientMagnitudeMap>,<GradientOrientationCoherenceMap>,<GradientMagnitudeHistogram>,<HighFrequencyResidualMap>,<DoGSharpnessMap>,<LocalGradientDeviationMap>,<NoiseResidualMap>,<FourierMagnitudeSpectrum>,<LuminanceHistogram>,<ExtremeLuminanceMap>,<PerceptualColorfulnessMap>,<ChromaticDeviationMap>,<ColorSaturationClippingMap>,<MSCNNormalizedLuminanceMap>,<MSCNDistributionHistogram>"
+resize_vocab: true
+
+### method - 训练方法配置
+stage: sft
+do_train: true
+finetuning_type: full                   # 全参数微调
+freeze_vision_tower: true               # 冻结视觉编码器（减少显存）
+freeze_multi_modal_projector: false     # 不冻结多模态投影层
+freeze_language_model: false            # 不冻结语言模型
+deepspeed: examples/deepspeed/ds_z3_offload_config.json
+
+### dataset - 数据集配置
+dataset: koniq_iqa
+template: qwen3_vl
+cutoff_len: 2560
+preprocessing_num_workers: 16
+dataloader_num_workers: 4
+media_dir: ../../../dataset/KONIQ  # 图像基础路径
+mask_mm_tokens: true
+
+# System Prompt - 定义输出格式要求
+default_system: "You are an expert image quality assessment (IQA) assistant. You will analyze images using various visual quality analysis tools and provide quality scores.\n\n## Output Format Requirements\nYour response MUST follow this exact format:\n\n<think>\n[Your detailed analysis of the image quality, referencing the visual analysis maps/histograms provided. Describe observations about:\n- Luminance and exposure characteristics\n- Sharpness and blur levels\n- Color quality and saturation\n- Noise and artifacts\n- Overall perceptual quality]\n</think>\n<answer_start>{\"score\": X.XX}<answer_end>\n\n## Scoring Guidelines\n- Score range: 1.00 to 5.00\n- Higher scores indicate better perceptual quality\n- Consider all visual quality dimensions in your assessment\n\n## Available Analysis Tools\nYou may reference these visual analysis tools in your reasoning:\n- GradientMagnitudeMap, GradientOrientationCoherenceMap, GradientMagnitudeHistogram\n- HighFrequencyResidualMap, DoGSharpnessMap, LocalGradientDeviationMap\n- NoiseResidualMap, FourierMagnitudeSpectrum\n- LuminanceHistogram, ExtremeLuminanceMap\n- PerceptualColorfulnessMap, ChromaticDeviationMap, ColorSaturationClippingMap\n- MSCNNormalizedLuminanceMap, MSCNDistributionHistogram"
+
+### output - 输出配置
+output_dir: ../../../saves/qwen3-vl-4B-Instruct-all-SFT 
+logging_steps: 10
+save_strategy: epoch
+save_total_limit: 2
+plot_loss: true
+overwrite_output_dir: true
+save_only_model: false
+report_to: tensorboard
+
+### train - 训练超参数
+per_device_train_batch_size: 1          # 4B 显存更大，可保持不变
+gradient_accumulation_steps: 16
+learning_rate: 1.0e-5
+num_train_epochs: 2.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.05
+bf16: true
+ddp_timeout: 180000000
+resume_from_checkpoint: null
