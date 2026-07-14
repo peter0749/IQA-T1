@@ -5,202 +5,128 @@
 This is the official repository for IQA-T1.
 
 [![Paper](https://img.shields.io/badge/cs.CV-Paper-b31b1b?style=flat&logo=arxiv&logoColor=white)](https://arxiv.org/abs/your-paper-id)
+[![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-ffd21e)](https://huggingface.co/zibuyu-02/IQA-T1)
+[![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Data-ffd21e)](https://huggingface.co/datasets/zibuyu-02/Q-Tool)
+\
+[![made-for-VSCode](https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg)](https://code.visualstudio.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 </div>
 
 ## 📰 News
-
+- **[2026-7-14]** 🔥 We release the **Model** publicly on [HuggingFace](https://huggingface.co/zibuyu-02/IQA-T1) and [Baidu Netdisk](https://pan.baidu.com/s/1jeOrTOY1X1loEhNpJKjixQ?pwd=ejf9).
+- **[2026-7-10]** 🔥 We release the **Dataset** publicly on [HuggingFace](https://huggingface.co/datasets/zibuyu-02/Q-Tool) and [Baidu Netdisk](https://pan.baidu.com/s/1aSJ4eg4QMAtQPoDwbgnZCA?pwd=2k4m).
 - **[2026-06-18]** 🚀 Our paper is accepted by **ECCV 2026**.
-
 ---
 
+## 🔭 **Motivation**
+- Existing VLM-based IQA methods mainly rely on **text-only** reasoning or **region-based** reasoning, which suffer from semantic bias or lack explicit perceptual interpretation. 
+- IQA-T1 introduces a new paradigm of **tool-based visual evidence reasoning** for image quality assessment.
+
+![IQA-T1 的核心动机](figures/fig1-motivation.png)
+
 ## 📁 Repository Structure
+- For training, download the [dataset](https://pan.baidu.com/s/1aSJ4eg4QMAtQPoDwbgnZCA?pwd=2k4m) and place it in dataset/, and download the [Qwen3-VL-4B](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct) to the root directory.
+- For inference, download the **IQA-T1** [model checkpoint](https://pan.baidu.com/s/1jeOrTOY1X1loEhNpJKjixQ?pwd=ejf9) and place it in saves/.
 
 ```
-IQA-T1/
-├── train/
-│   ├── sft/
-│   │   └── LlamaFactory_IQA-T1/         # Modified LLaMA-Factory for SFT (tool-augmented IQA)
-│   └── grpo/
-│       └── EasyR1_IQA-T1/               # Modified EasyR1 for GRPO (multi-turn tool-calling RL)
-├── dataset/                             # Training dataset (see Step 1)
-│   └── KONIQ/
-│       ├── koniq/                        # Original KonIQ-10k images
-│       ├── tools/                        # Pre-computed tool visualization images
-│       └── metas/                        # Dataset metadata / annotation files
+IQA-T1/          
+├── dataset/                      
+│   └── KONIQ/                         
+│       ├── koniq/                         # Original KonIQ images
+│       ├── tools/                         # Pre-computed tool images
+│       └── metas/                         # Dataset metadata files
+├── saves/                      
+│   └── qwen3-vl-4B-Instruct-all-GRPO-v3/
+├── Qwen3-VL-4B-Instruct/ 
+├── train/ 
 ├── inference/
-│   └── infer.py                         # Inference script
-├── scripts/                             # Shared utility modules
-│   ├── tools.py                         # Visual quality analysis tool functions
-│   ├── iqa.py                           # IQA core module
-│   └── iqa_mm_placeholders.py           # Multimodal placeholder utilities
-├── train_qwen3vl_iqa_sft-4b.sh          # SFT training launch script
-├── train_qwen3vl_iqa_grpo-4b.sh         # GRPO training launch script
-└── README.md
+├── scripts/       
+├── train_qwen3vl_iqa_sft-4b.sh            # SFT training script
+├── train_qwen3vl_iqa_grpo-4b.sh           # GRPO training script
+├── infer_qwen3vl_iqa.sh                   # IQA-T1 inference script
+└── ...
 ```
 
 ---
 
 ## 🛠️ Environment Setup
 
+SFT and GRPO stages use **two separate conda environments** for dependency compatibility. We provide pre-exported environment files.
+
 ```bash
-git clone https://github.com/your-org/IQA-T1.git
+git clone https://github.com/zibuyu-02/IQA-T1.git
 cd IQA-T1
 
-conda create -n iqa_t1 python=3.10 -y
-conda activate iqa_t1
+# SFT environment (Stage 1)
+conda env create -f environment_sft.yaml
 
-# Install training frameworks (see details below)
-pip install torch torchvision  # match your CUDA version
+# GRPO environment (Stage 2 + Inference)
+conda env create -f environment_grpo.yaml
 ```
+
+| File | Purpose | Key Packages |
+|---|---|---|
+| `environment_sft.yaml` | SFT training | PyTorch 2.6, DeepSpeed, Transformers |
+| `environment_grpo.yaml` | GRPO training & Inference | PyTorch 2.8, vLLM 0.11, Ray |
 
 ---
 
-## 🎓 Stage 1: Supervised Fine-Tuning (SFT)
+## 🧠 **Training**
 
-### Step 1: Prepare the KonIQ-10k Dataset
+### 🎓 Stage 1: Supervised Fine-Tuning (SFT)
 
-Download and place under `dataset/KONIQ/` with the following structure:
+1. Download the [Q-Tool dataset](https://huggingface.co/datasets/zibuyu-02/Q-Tool) and place it in `dataset/KONIQ/`.
 
-```
-dataset/KONIQ/
-├── koniq/                    # 10,375 original images (*.jpg), e.g. KonIQ-10k dataset
-├── tools/                    # Pre-computed tool maps (one folder per image)
-│   ├── 10004473376/
-│   │   ├── GradientMagnitudeMap.png
-│   │   ├── ExtremeLuminanceMap.png
-│   │   └── ...               # 15 tool types per image
-│   └── ...
-└── metas/
-    └── koniq_training-multimodal-all.json   # Training data in ShareGPT format
-```
+2. Download the base model [Qwen3-VL-4B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct) to the root directory.
 
-The KonIQ-10k images can be obtained from the [official KonIQ-10k website](http://database.mmsp-kn.de/koniq-10k.html).
+3. Activate the SFT environment:
 
-The pre-computed tool maps (`tools/`) and training data JSON (`metas/`) should be placed under `dataset/KONIQ/` as shown above.
-
-### Step 2: Download the Base Model
-
-Download [Qwen3-VL-4B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct) and place it at the repository root:
-
-```
-IQA-T1/
-└── Qwen3-VL-4B-Instruct/     # Download from HuggingFace
-```
-
-Alternatively, you can skip this step and let the training script auto-download the model from HuggingFace using the model ID `Qwen/Qwen3-VL-4B-Instruct`.
-
-### Step 3: Configure the Model Path
-
-Edit `train/sft/LlamaFactory_IQA-T1/configs/qwen3vl_4b_iqa_full_sft.yaml`:
-
-```yaml
-# Option A: Use local model (recommended)
-model_name_or_path: ../../Qwen3-VL-4B-Instruct
-
-# Option B: Auto-download from HuggingFace
-model_name_or_path: Qwen/Qwen3-VL-4B-Instruct
-
-# Option C: Use absolute path
-model_name_or_path: /absolute/path/to/IQA-T1/Qwen3-VL-4B-Instruct
-```
-
-> **Note**: If using a relative path with `../../`, newer versions of `huggingface_hub` may reject it. In that case, use an absolute path or the HuggingFace model ID directly.
-
-### Step 4: Install SFT Framework Dependencies
-
-```bash
-cd train/sft/LlamaFactory_IQA-T1
-
-# LLaMA-Factory requires its src/ on PYTHONPATH. Install in editable mode:
-pip install setuptools  # ensure setuptools is available first
-cd src
-pip install -e .
-cd ..
-
-# Install additional requirements
-pip install -r requirements/requirements_iqa.txt  # if exists
-# Otherwise install common deps:
-pip install deepspeed datasets accelerate peft
-```
-
-Alternatively, set `PYTHONPATH` manually (no pip install needed):
-
-```bash
-export PYTHONPATH="$(pwd)/src:$PYTHONPATH"
-```
-
-### Step 5: Run SFT Training
-
-From the IQA-T1 root directory:
-
-```bash
-cd /path/to/IQA-T1
-bash train_qwen3vl_iqa_sft-4b.sh
-```
-
-The script will:
-
-- `cd` into `train/sft/LlamaFactory_IQA-T1`
-- Launch `llamafactory-cli train` with `configs/qwen3vl_4b_iqa_full_sft.yaml`
-- Use DeepSpeed ZeRO-3 across 3 GPUs (configurable via `CUDA_VISIBLE_DEVICES`)
-- Save checkpoints to `saves/qwen3-vl-4B-Instruct-all-SFT/`
-
-### Key Config Parameters
-
-| Parameter                     | Value                                          | Notes                                       |
-| ----------------------------- | ---------------------------------------------- | ------------------------------------------- |
-| `model_name_or_path`          | `Qwen/Qwen3-VL-4B-Instruct`                    | Change to local path if needed              |
-| `media_dir`                   | `../../../dataset/KONIQ`                       | Relative to LlamaFactory_IQA-T1 cwd         |
-| `output_dir`                  | `../../../saves/...`                           | Checkpoint save location                    |
-| `finetuning_type`             | `full`                                         | Full-parameter fine-tuning                  |
-| `freeze_vision_tower`         | `true`                                         | Freeze vision encoder to save memory        |
-| `deepspeed`                   | `examples/deepspeed/ds_z3_offload_config.json` | ZeRO-3 with offload                         |
-| `per_device_train_batch_size` | `1`                                            | Adjust based on GPU memory                  |
-| `gradient_accumulation_steps` | `16`                                           | Effective batch size = 1 × 16 × 3 GPUs = 48 |
-| `num_train_epochs`            | `2.0`                                          | Number of training epochs                   |
-| `cutoff_len`                  | `2560`                                         | Max token length (reduce if OOM)            |
-
----
-
-## 🎓 Stage 2: GRPO Reinforcement Learning
-
-We employ a modified version of [EasyR1](https://github.com/hiyouga/EasyR1) for GRPO training with multi-turn tool-calling.
-
-1. Set `YOUR_SFT_CHECKPOINT_PATH` and `YOUR_KONIQ_DATA_DIR` in the GRPO config (e.g., `train/grpo/EasyR1_IQA-T1/examples/qwen3_vl_4b_iqa_agent_grpo-v3.yaml`):
-   
-   ```yaml
-   data:
-     train_files: ./data/train_koniq_7k_rl.json
-     image_dir: YOUR_KONIQ_DATA_DIR
-   worker:
-     actor:
-       model:
-         model_path: YOUR_SFT_CHECKPOINT_PATH
+   ```bash
+   conda activate tools   # created from environment_sft.yaml
    ```
 
-2. Run GRPO training from the IQA-T1 root directory:
-   
+4. Launch SFT training from the IQA-T1 root directory:
+
+   ```bash
+   bash train_qwen3vl_iqa_sft-4b.sh
+   ```
+
+### 🎓 Stage 2: Reinforcement Learning (GRPO)
+
+1. Ensure the SFT checkpoint from Stage 1 is at `saves/qwen3-vl-4B-Instruct-all-SFT/`. Update the `MODEL_PATH` in `train_qwen3vl_iqa_grpo-4b.sh` if you renamed the checkpoint.
+
+2. Activate the GRPO environment:
+
+   ```bash
+   conda activate verl  # created from environment_grpo.yaml
+   ```
+
+3. Launch GRPO training from the IQA-T1 root directory:
+
    ```bash
    bash train_qwen3vl_iqa_grpo-4b.sh
    ```
-
 ---
 
-## 📊 Inference
+## ⚡ Quick Start
+### Inference
 
-From the IQA-T1 root directory:
+1. Download the **IQA-T1** [model checkpoint](https://huggingface.co/zibuyu-02/IQA-T1) and place it in `saves/`.
 
-```bash
-python inference/infer.py --image_path /path/to/your/image.jpg --model_path /path/to/your/model
-```
+2. Set the image path and model path in `infer_qwen3vl_iqa.sh`, then run from the IQA-T1 root directory:
 
-Arguments:
+   ```bash
+   bash infer_qwen3vl_iqa.sh
+   ```
 
-- `--image_path`: Path to the input image
-- `--model_path`: Path to the trained model checkpoint (HuggingFace format)
-- `--device`: Device to run inference on (default: `cuda` if available)
+   Or override via environment variables:
+
+   ```bash
+   IMAGE_PATH=/path/to/your/image MODEL_PATH=/path/to/your/model bash infer_qwen3vl_iqa.sh
+   ```
+
+3. Results are saved to `result/result.json`, and visual evidence images are saved to `result/{image_name}/`.
 
 ---
 
@@ -209,14 +135,15 @@ Arguments:
 If you find IQA-T1 useful for your research and applications, please cite using this BibTeX:
 
 ```latex
-@inproceedings{your2026iqat1,
+@inproceedings{wu2026iqat1,
   title={IQA-T1: Tool-based Visual Evidence Reasoning for Image Quality Assessment},
-  author={...},
-  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
+  author={Wu, Jinjian and Tang, Jiaqi and Wei, Wei and Yan, Yingying and Chen, Jianmin and Geng, Botong and Zhang, Lei and Chen, Qifeng},
+  booktitle={European Conference on Computer Vision (ECCV)},
   year={2026}
 }
 ```
 
 ## 🤝 Acknowledgements
 
-We thank the authors of [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory), [EasyR1](https://github.com/hiyouga/EasyR1), and [Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) for their contributions. Our modified versions (`LlamaFactory_IQA-T1` and `EasyR1_IQA-T1`) extend these frameworks with tool-based multi-turn reasoning capabilities for image quality assessment.
+This work was supported in part by the National Natural Science Foundation of China (No. 62472359, No. 62372379), in part by Xi’an’s Key Industrial Chain Core Technology Breakthrough Project: AI Core Technology Breakthrough under Grand 24ZDCYJSGG0003, and in part by the Hong Kong University of Science and Technology under Grant No. WEB26EG02.\
+We also thank the authors of [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory), [EasyR1](https://github.com/hiyouga/EasyR1), and [Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) for their contributions. Our modified versions extend these frameworks with tool-based reasoning capabilities for IQA.
