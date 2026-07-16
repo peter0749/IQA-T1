@@ -4,7 +4,7 @@
 
 This is the official repository for IQA-T1.
 
-[![Paper](https://img.shields.io/badge/cs.CV-Paper-b31b1b?style=flat&logo=arxiv&logoColor=white)](https://arxiv.org/abs/your-paper-id)
+[![Paper](https://img.shields.io/badge/cs.CV-Paper-b31b1b?style=flat&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2607.12375v1)
 [![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-ffd21e)](https://huggingface.co/zibuyu-02/IQA-T1)
 [![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Data-ffd21e)](https://huggingface.co/datasets/zibuyu-02/Q-Tool)
 \
@@ -14,6 +14,7 @@ This is the official repository for IQA-T1.
 </div>
 
 ## 📰 News
+- **[2026-7-15]** 🔥 Online demo is now available at [HF Space](https://huggingface.co/spaces/Jiaqi-hkust/IQA-T1).
 - **[2026-7-14]** 🔥 We release the **Model** publicly on [HuggingFace](https://huggingface.co/zibuyu-02/IQA-T1) and [Baidu Netdisk](https://pan.baidu.com/s/1jeOrTOY1X1loEhNpJKjixQ?pwd=ejf9).
 - **[2026-7-10]** 🔥 We release the **Dataset** publicly on [HuggingFace](https://huggingface.co/datasets/zibuyu-02/Q-Tool) and [Baidu Netdisk](https://pan.baidu.com/s/1aSJ4eg4QMAtQPoDwbgnZCA?pwd=2k4m).
 - **[2026-06-18]** 🚀 Our paper is accepted by **ECCV 2026**.
@@ -41,6 +42,7 @@ IQA-T1/
 ├── Qwen3-VL-4B-Instruct/ 
 ├── train/ 
 ├── inference/
+├── demo/
 ├── scripts/       
 ├── train_qwen3vl_iqa_sft-4b.sh            # SFT training script
 ├── train_qwen3vl_iqa_grpo-4b.sh           # GRPO training script
@@ -61,14 +63,60 @@ cd IQA-T1
 # SFT environment (Stage 1)
 conda env create -f environment_sft.yaml
 
-# GRPO environment (Stage 2 + Inference)
+# GRPO environment (Stage 2)
 conda env create -f environment_grpo.yaml
 ```
 
 | File | Purpose | Key Packages |
 |---|---|---|
 | `environment_sft.yaml` | SFT training | PyTorch 2.6, DeepSpeed, Transformers |
-| `environment_grpo.yaml` | GRPO training & Inference | PyTorch 2.8, vLLM 0.11, Ray |
+| `environment_grpo.yaml` | GRPO training | PyTorch 2.8, vLLM 0.11, Ray |
+
+---
+
+## ⚡ Quick Start
+### Inference
+
+1. Download the **IQA-T1** [model checkpoint](https://huggingface.co/zibuyu-02/IQA-T1) and place it in `saves/`.
+
+2. Set the image path and model path in `infer_qwen3vl_iqa.sh`, then run from the IQA-T1 root directory:
+
+   ```bash
+   bash infer_qwen3vl_iqa.sh
+   ```
+
+   Or override via environment variables:
+
+   ```bash
+   IMAGE_PATH=/path/to/your/image MODEL_PATH=/path/to/your/model bash infer_qwen3vl_iqa.sh
+   ```
+
+3. Results are saved to `result/result.json`, and visual evidence images are saved to `result/{image_name}/`.
+
+---
+
+## 🎮 Demo
+
+We provide an interactive Gradio demo for trying IQA-T1 without writing code.
+
+### 🌐 Online Demo
+
+Visit **[IQA-T1 on HF Spaces](https://huggingface.co/spaces/Jiaqi-hkust/IQA-T1)** to run inference directly in your browser — no installation required.
+
+### 💻 Local Demo
+
+1. Run the demo on your own machine:
+
+```bash
+cd IQA-T1/demo
+pip install -r requirements.txt
+python app.py --model_path zibuyu-02/IQA-T1   # or a local checkpoint path
+```
+
+2. Then open `http://localhost:7860` in your browser. 
+3. Upload an image or select one of the examples to see the model's tool-based visual evidence reasoning chain.
+
+![Demo case](figures/case.png)
 
 ---
 
@@ -107,27 +155,6 @@ conda env create -f environment_grpo.yaml
    ```bash
    bash train_qwen3vl_iqa_grpo-4b.sh
    ```
----
-
-## ⚡ Quick Start
-### Inference
-
-1. Download the **IQA-T1** [model checkpoint](https://huggingface.co/zibuyu-02/IQA-T1) and place it in `saves/`.
-
-2. Set the image path and model path in `infer_qwen3vl_iqa.sh`, then run from the IQA-T1 root directory:
-
-   ```bash
-   bash infer_qwen3vl_iqa.sh
-   ```
-
-   Or override via environment variables:
-
-   ```bash
-   IMAGE_PATH=/path/to/your/image MODEL_PATH=/path/to/your/model bash infer_qwen3vl_iqa.sh
-   ```
-
-3. Results are saved to `result/result.json`, and visual evidence images are saved to `result/{image_name}/`.
-
 ---
 
 ## ⭐ Citation

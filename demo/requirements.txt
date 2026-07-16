@@ -1,0 +1,11 @@
+gradio>=4.0.0
+torch>=2.6.0
+torchvision
+transformers>=4.57.0
+accelerate
+Pillow
+numpy
+opencv-python-headless
+scipy
+matplotlib
+tqdm
