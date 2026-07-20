@@ -14,9 +14,9 @@ This is the official repository for IQA-T1.
 </div>
 
 ## 📰 News
-- **[2026-7-15]** 🔥 Online demo is now available at [HF Space](https://huggingface.co/spaces/Jiaqi-hkust/IQA-T1).
-- **[2026-7-14]** 🔥 We release the **Model** publicly on [HuggingFace](https://huggingface.co/zibuyu-02/IQA-T1) and [Baidu Netdisk](https://pan.baidu.com/s/1jeOrTOY1X1loEhNpJKjixQ?pwd=ejf9).
-- **[2026-7-10]** 🔥 We release the **Dataset** publicly on [HuggingFace](https://huggingface.co/datasets/zibuyu-02/Q-Tool) and [Baidu Netdisk](https://pan.baidu.com/s/1aSJ4eg4QMAtQPoDwbgnZCA?pwd=2k4m).
+- **[2026-7-20]** 🔥 Online demo is now available at [HF Space](https://huggingface.co/spaces/Jiaqi-hkust/IQA-T1).
+- **[2026-7-20]** 🔥 We release the **Model** publicly on [HuggingFace](https://huggingface.co/zibuyu-02/IQA-T1) and [Baidu Netdisk](https://pan.baidu.com/s/1jeOrTOY1X1loEhNpJKjixQ?pwd=ejf9).
+- **[2026-7-20]** 🔥 We release the **Dataset** publicly on [HuggingFace](https://huggingface.co/datasets/zibuyu-02/Q-Tool) and [Baidu Netdisk](https://pan.baidu.com/s/1aSJ4eg4QMAtQPoDwbgnZCA?pwd=2k4m).
 - **[2026-06-18]** 🚀 Our paper is accepted by **ECCV 2026**.
 ---
 
