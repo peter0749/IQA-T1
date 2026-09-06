@@ -457,10 +457,9 @@ class IQAInference:
             self.model.to(self.device)
         self.model.eval()
 
-        self.processor = AutoProcessor.from_pretrained(
-            load_path,
-            fix_mistral_regex=True,
-        )
+        # transformers 5.0 TokenizersBackend already forwards fix_mistral_regex;
+        # passing it here raises TypeError (duplicate kwarg). Unused for Qwen.
+        self.processor = AutoProcessor.from_pretrained(load_path)
 
         print("Model loaded.")
 
