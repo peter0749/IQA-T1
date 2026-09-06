@@ -439,12 +439,22 @@ class IQAInference:
 
         load_path = self._resolve_load_path()
 
+        # MPS/CPU: FA2 unavailable; must move weights when device_map is None.
+        if self.device == "cuda":
+            attn_implementation = "flash_attention_2"
+            device_map = {"": 0}
+        else:
+            attn_implementation = "sdpa"
+            device_map = None
+
         self.model = Qwen3VLForConditionalGeneration.from_pretrained(
             load_path,
             dtype=torch.bfloat16,
-            attn_implementation="flash_attention_2",
-            device_map={"": 0} if self.device == "cuda" else None,
+            attn_implementation=attn_implementation,
+            device_map=device_map,
         )
+        if device_map is None:
+            self.model.to(self.device)
         self.model.eval()
 
         self.processor = AutoProcessor.from_pretrained(
