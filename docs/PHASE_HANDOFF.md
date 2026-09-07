@@ -6,6 +6,8 @@ Quota wrap. Local-first path only; no cloud rental; no blind 11k regen.
 
 E1 protocol v1 execution is complete: freeze, G0 PASS, D16, H32. See [E1_DECISION.md](E1_DECISION.md). H quality result is **inconclusive** ([E1_H_STATUS.md](E1_H_STATUS.md)). Do not resample H.
 
+A follow-up official-infer audit of released IQA-T1 on D16 is in [PAPER_D16_AUDIT.md](PAPER_D16_AUDIT.md): first tool often Histogram (14/16) but sequences and scores are not L5-collapsed.
+
 E1 [Issue #6](https://github.com/peter0749/IQA-T1/issues/6) remains the phase card until closed. No further inference or training without a new Outcome.
 L1–L5 are exploratory pilots. L4 static checks do not exclude runtime faults. L5 changed tool placement, text references, and evidence timing together; exact reference-tool mismatch is not proof of incorrect selection. Eight rows were trained on; eight were development evaluation only. Earlier categorical tool-policy claims below are historical and superseded by these qualifications.
 

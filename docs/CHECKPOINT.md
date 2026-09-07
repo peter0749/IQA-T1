@@ -18,6 +18,7 @@ E1 protocol v1 has been executed. C7–C9 are pilots. C10 G0 PASS. C11 D16 mecha
 - [ ] **C10 E1 G0**: `docs/E1_G0_STATUS.md` and `scratch/e1/g0/run2/decision.json` classification PASS; 12 rollouts, unique adapters, no H32 access. Not a quality result.
 - [ ] **C11 E1 D**: `docs/E1_D_STATUS.md` and `scratch/e1/d/run1/analysis.json`; D16 only. L5 first tool invariant; L5 first-evidence score change CI excludes 0; D16 error-diff CI includes 0.
 - [ ] **C12 E1 H**: `docs/E1_H_STATUS.md` and `scratch/e1/h/run1/analysis.json` classification **inconclusive**. L5 primary −0.044 [−0.122, 0.025]; did not meet the predeclared 0.05 / CI-upper<0 rule.
+- [ ] **C13 Paper D16 audit**: `docs/PAPER_D16_AUDIT.md`; official IQA-T1 on D16 first-tool 14/16 Histogram, 8 sequences, MAE 0.159 descriptive. Not PLCC.
 
 ## Do not resume without user go
 
