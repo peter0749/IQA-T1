@@ -10,6 +10,7 @@ Use this list to re-verify after a pause. Board mirrors these as **C-** cards.
 - [ ] **C4 Flash Next effort**: with session-bank cleared, N=8 gate ≥0.75 on **low** and **medium** (see `scratch/D2_P2b_RETEST.md`).
 - [ ] **C5 No 11k**: no full regen job started; any new synth is small-N + gate.
 - [ ] **C6 Assets**: Q-Tool + Qwen3-VL-4B base paths still valid on Mac (D1).
+- [ ] **C7 L3 prompt validation**: `scratch/L3_PROMPT_VALIDATION.md` and `scratch/l3_prompt_validation/run1/` are present; retain the result that the tested explicit tool contract was counterproductive (0/8 complete tool contract).
 
 ## Do not resume without user go
 
