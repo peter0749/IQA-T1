@@ -4,6 +4,8 @@ Quota wrap. Local-first path only; no cloud rental; no blind 11k regen.
 
 ## Current research direction — supersedes earlier next-step interpretations
 
+E1 data/checkpoint freeze completed: see [E1_FREEZE_STATUS.md](E1_FREEZE_STATUS.md). D16/H32 and donor mapping are fixed; runtime harness/G0 pending. Do not resample based on outputs.
+
 E1 [Issue #6](https://github.com/peter0749/IQA-T1/issues/6) is the active phase. Follow [EMPIRICAL_PROTOCOL.md](EMPIRICAL_PROTOCOL.md) v1: exposure/manifest freeze → runtime gate → mechanism contrasts → reserved evaluation → unified decision. Protocol registered; experiments pending.
 L1–L5 are exploratory pilots. L4 static checks do not exclude runtime faults. L5 changed tool placement, text references, and evidence timing together; exact reference-tool mismatch is not proof of incorrect selection. Eight rows were trained on; eight were development evaluation only. Earlier categorical tool-policy claims below are historical and superseded by these qualifications.
 
