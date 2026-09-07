@@ -40,6 +40,9 @@ GitHub Project #4 (owner `peter0749`): IQA-T1 Study.
 - Repo clone / fork work: under that tree + GitHub `peter0749/IQA-T1`
 - Flash Next serve: `~/mtplx_setup/serve_flash_next.sh` on `:8000` (stop when idle)
 - Scratch reports: `~/Projects/IQA-T1/scratch/`
+  - Bake-off writeups: `D2_BAKEOFF.md`, `D2_P1_RETEST.md`, `D2_P2_RETEST.md`, `D2_P2b_RETEST.md`
+  - L1: `l1_lora_out/SUMMARY.json`
+  - Gate/run artifacts (SSE confirmed): `synth_gate/gate_n8_p2_*.json`, `d2_bakeoff/results_p2.json`, `request_proof_p2_{low,auto,medium}.json`, `run_p2_bakeoff.py`
 
 ## How to resume next session
 
