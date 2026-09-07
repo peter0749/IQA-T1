@@ -39,4 +39,4 @@ run2 三個 fresh process 合計約 182 秒（base 76 / L2 46 / L5 60）。12 ro
 
 ## 下一步
 
-協定順序：D 機制對照 → H 保留集。需另一次 Outcome 才執行；H 仍鎖定。
+D 已完成：見 [E1_D_STATUS.md](E1_D_STATUS.md)。H 仍鎖定，需另一次 Outcome。
