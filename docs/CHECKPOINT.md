@@ -11,6 +11,7 @@ Use this list to re-verify after a pause. Board mirrors these as **C-** cards.
 - [ ] **C5 No 11k**: no full regen job started; any new synth is small-N + gate.
 - [ ] **C6 Assets**: Q-Tool + Qwen3-VL-4B base paths still valid on Mac (D1).
 - [ ] **C7 L3 prompt validation**: `scratch/L3_PROMPT_VALIDATION.md` and `scratch/l3_prompt_validation/run1/` are present; retain the result that the tested explicit tool contract was counterproductive (0/8 complete tool contract).
+- [ ] **C8 L4 alignment audit**: `scratch/L4_PROMPT_ALIGNMENT_AUDIT.md` and `scratch/l4_prompt_alignment_audit/run2/audit.json` are present; retain the original short user prompt and do not add tool-library or output-format instructions to it.
 
 ## Do not resume without user go
 
