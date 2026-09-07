@@ -2,6 +2,8 @@
 
 Use this list to re-verify after a pause. Board mirrors these as **C-** cards.
 
+E1 now governs research execution: read `docs/EMPIRICAL_PROTOCOL.md`. C7–C9 preserve artifact history, not proof of prompt causality or incorrect tool selection. Freeze exposure/split/model manifests and pass runtime G0 before interpreting new experiments. No new inference or training was run during protocol registration.
+
 ## Must confirm before claiming path still green
 
 - [ ] **C1 MPS**: `./run_mps.sh` still scores a sample image (expect ~4.x class result; exact score may drift).

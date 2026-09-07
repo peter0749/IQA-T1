@@ -2,6 +2,11 @@
 
 Quota wrap. Local-first path only; no cloud rental; no blind 11k regen.
 
+## Current research direction — supersedes earlier next-step interpretations
+
+E1 [Issue #6](https://github.com/peter0749/IQA-T1/issues/6) is the active phase. Follow [EMPIRICAL_PROTOCOL.md](EMPIRICAL_PROTOCOL.md) v1: exposure/manifest freeze → runtime gate → mechanism contrasts → reserved evaluation → unified decision. Protocol registered; experiments pending.
+L1–L5 are exploratory pilots. L4 static checks do not exclude runtime faults. L5 changed tool placement, text references, and evidence timing together; exact reference-tool mismatch is not proof of incorrect selection. Eight rows were trained on; eight were development evaluation only. Earlier categorical tool-policy claims below are historical and superseded by these qualifications.
+
 ## Board
 
 GitHub Project #4 (owner `peter0749`): IQA-T1 Study.
@@ -53,7 +58,7 @@ GitHub Project #4 (owner `peter0749`): IQA-T1 Study.
 ## How to resume next session
 
 1. Read this file + `docs/CHECKPOINT.md`.
-2. Confirm board #4: L3, L4, and L5 are Done; no open This-quarter cards; R4 still Backlog.
+2. E1 is active in This quarter; L3–L5 are completed exploratory pilots. Read the E1 protocol before acting; its phase gates supersede the optional actions below.
 3. Optional next (needs explicit user priority):
    - Small gated synth batch (not 11k) with low/medium + gate
    - Longer local LoRA / apply adapter to MPS infer
