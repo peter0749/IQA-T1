@@ -57,4 +57,4 @@ L2 分數幾乎不動（8 張裡 7 張變化 0），比較接近「回傳證據�
 3. L2 半數不叫工具，叫了以後 evidence 幾乎不改分數。
 4. base 無工具路徑，不能當公平無工具對照。
 
-下一步依協定是 **H 保留集（E1c）**，需另一次 Outcome。
+H 已完成：見 [E1_H_STATUS.md](E1_H_STATUS.md)、[E1_DECISION.md](E1_DECISION.md)。
