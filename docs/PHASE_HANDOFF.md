@@ -4,9 +4,9 @@ Quota wrap. Local-first path only; no cloud rental; no blind 11k regen.
 
 ## Current research direction — supersedes earlier next-step interpretations
 
-E1 data/checkpoint freeze completed: see [E1_FREEZE_STATUS.md](E1_FREEZE_STATUS.md). D16/H32 and donor mapping are fixed; runtime harness/G0 pending. Do not resample based on outputs.
+E1 data/checkpoint freeze completed: see [E1_FREEZE_STATUS.md](E1_FREEZE_STATUS.md). G0 pipeline gate **PASS**: see [E1_G0_STATUS.md](E1_G0_STATUS.md). D16/H32 remain unused. Do not resample based on outputs.
 
-E1 [Issue #6](https://github.com/peter0749/IQA-T1/issues/6) is the active phase. Follow [EMPIRICAL_PROTOCOL.md](EMPIRICAL_PROTOCOL.md) v1: exposure/manifest freeze → runtime gate → mechanism contrasts → reserved evaluation → unified decision. Protocol registered; experiments pending.
+E1 [Issue #6](https://github.com/peter0749/IQA-T1/issues/6) is the active phase. Follow [EMPIRICAL_PROTOCOL.md](EMPIRICAL_PROTOCOL.md) v1: exposure/manifest freeze → runtime gate → mechanism contrasts → reserved evaluation → unified decision. Freeze and G0 are done; D/H pending.
 L1–L5 are exploratory pilots. L4 static checks do not exclude runtime faults. L5 changed tool placement, text references, and evidence timing together; exact reference-tool mismatch is not proof of incorrect selection. Eight rows were trained on; eight were development evaluation only. Earlier categorical tool-policy claims below are historical and superseded by these qualifications.
 
 ## Board
@@ -60,7 +60,7 @@ GitHub Project #4 (owner `peter0749`): IQA-T1 Study.
 ## How to resume next session
 
 1. Read this file + `docs/CHECKPOINT.md`.
-2. E1 is active in This quarter; L3–L5 are completed exploratory pilots. Read the E1 protocol before acting; its phase gates supersede the optional actions below.
+2. E1 is active in This quarter; L3–L5 are completed exploratory pilots. Read the E1 protocol before acting; its phase gates supersede the optional actions below. G0 has passed; do not start D/H without an explicit Outcome.
 3. Optional next (needs explicit user priority):
    - Small gated synth batch (not 11k) with low/medium + gate
    - Longer local LoRA / apply adapter to MPS infer

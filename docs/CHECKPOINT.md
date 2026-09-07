@@ -2,7 +2,7 @@
 
 Use this list to re-verify after a pause. Board mirrors these as **C-** cards.
 
-E1 now governs research execution: read `docs/EMPIRICAL_PROTOCOL.md`. C7–C9 preserve artifact history, not proof of prompt causality or incorrect tool selection. Freeze exposure/split/model manifests and pass runtime G0 before interpreting new experiments. No new inference or training was run during protocol registration.
+E1 now governs research execution: read `docs/EMPIRICAL_PROTOCOL.md`. C7–C9 preserve artifact history, not proof of prompt causality or incorrect tool selection. C10 records G0 PASS; do not interpret D/H until those experiments actually run. H32 remains unused.
 
 ## Must confirm before claiming path still green
 
@@ -15,6 +15,7 @@ E1 now governs research execution: read `docs/EMPIRICAL_PROTOCOL.md`. C7–C9 pr
 - [ ] **C7 L3 prompt validation**: `scratch/L3_PROMPT_VALIDATION.md` and `scratch/l3_prompt_validation/run1/` are present; retain the result that the tested explicit tool contract was counterproductive (0/8 complete tool contract).
 - [ ] **C8 L4 alignment audit**: `scratch/L4_PROMPT_ALIGNMENT_AUDIT.md` and `scratch/l4_prompt_alignment_audit/run2/audit.json` are present; retain the original short user prompt and do not add tool-library or output-format instructions to it.
 - [ ] **C9 L5 tool-first SFT**: `scratch/L5_TOOL_FIRST_SFT_VALIDATION.md` and `scratch/l5_tool_first_sft/run1/` are present; retain the distinction between 8/8 tool execution and 0/8 exact held-out evidence-list match.
+- [ ] **C10 E1 G0**: `docs/E1_G0_STATUS.md` and `scratch/e1/g0/run2/decision.json` classification PASS; 12 rollouts, unique adapters, no H32 access. Not a quality result.
 
 ## Do not resume without user go
 
