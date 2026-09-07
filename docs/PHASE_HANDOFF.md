@@ -22,6 +22,7 @@ GitHub Project #4 (owner `peter0749`): IQA-T1 Study.
 | P2 / P2b | After session-bank clear + real `reasoning_effort`: low 1.00 / auto 0.875 / medium 1.00 | Mac `scratch/D2_P2_RETEST.md`, `scratch/D2_P2b_RETEST.md` |
 | L3 | Prompt-controlled local LoRA validation: baseline tool contract 3/8; explicit tool contract 0/8 and format 0/8, so do not use that prompt as a fix | Mac `scratch/L3_PROMPT_VALIDATION.md`, `scratch/l3_prompt_validation/run1/` |
 | L4 | SFT/prompt alignment audit: ChatML and continuation align; user-side long contract is outside SFT prompt support, so retain the original short prompt | Mac `scratch/L4_PROMPT_ALIGNMENT_AUDIT.md`, `scratch/l4_prompt_alignment_audit/run2/audit.json` |
+| L5 | Tool-first assistant target: tool contract and format 8/8, but tool selection collapsed to three generic tools (exact held-out evidence-list match 0/8) | Mac `scratch/L5_TOOL_FIRST_SFT_VALIDATION.md`, `scratch/l5_tool_first_sft/run1/` |
 
 ## Standing rules (locked)
 
@@ -46,18 +47,20 @@ GitHub Project #4 (owner `peter0749`): IQA-T1 Study.
   - L1: `l1_lora_out/SUMMARY.json`
   - L3: `L3_PROMPT_VALIDATION.md`, `l3_prompt_validation/run1/{manifest,baseline,contract,comparison}.json`
   - L4: `L4_PROMPT_ALIGNMENT_AUDIT.md`, `l4_prompt_alignment_audit/run2/audit.json`
+  - L5: `L5_TOOL_FIRST_SFT_VALIDATION.md`, `l5_tool_first_sft/run1/{manifest,transformation,comparison,validation_generations}.json`
   - Gate/run artifacts (SSE confirmed): `synth_gate/gate_n8_p2_*.json`, `d2_bakeoff/results_p2.json`, `request_proof_p2_{low,auto,medium}.json`, `run_p2_bakeoff.py`
 
 ## How to resume next session
 
 1. Read this file + `docs/CHECKPOINT.md`.
-2. Confirm board #4: L3 and L4 are Done; no open This-quarter cards; R4 still Backlog.
+2. Confirm board #4: L3, L4, and L5 are Done; no open This-quarter cards; R4 still Backlog.
 3. Optional next (needs explicit user priority):
    - Small gated synth batch (not 11k) with low/medium + gate
    - Longer local LoRA / apply adapter to MPS infer
    - R4 one-pager only
    - Do not treat L3's explicit 1–4-tool contract as an inference remedy; it caused immediate score-only outputs on all 8 held-out images.
    - Do not rerun the unmodified short prompt as if it were a new test. It is the L4-aligned baseline; a future card needs a distinct, controlled SFT-supervision or data-representation change.
+   - L5's tool-first target improves tool execution but is not an image-contingent tool policy: its held-out tool choices collapsed to three generic tools and exact evidence-list match was 0/8.
 4. STOs: SSE = serve/wiring/scripts; MLE = rubrics/accept; PM = board/Notion/handoff
 
 ## Displace (what we deliberately did not do)
